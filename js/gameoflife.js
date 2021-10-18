@@ -6,7 +6,11 @@ function seed() {
   return array;
 }
 
-function same([x, y], [j, k]) {}
+function same([x, y], [j, k]) {
+  let cell1 = [x, y].join('');
+  let cell2 = [j, k].join('');
+  return cell1 === cell2 ? true:false;
+}
 
 // The game state to search for `cell` is passed as the `this` value of the function.
 function contains(cell) {}
