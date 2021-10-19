@@ -30,7 +30,19 @@ const printCell = (cell, state) => {
   return contains.call(state, cell) ? '\u25A3':'\u25A2';
 };
 
-const corners = (state = []) => {};
+const corners = (state = []) => {
+  let allLivingCells = {
+    topRight: [ 0, 0 ],
+    bottomLeft: [ 0, 0 ]
+  };
+  //  calculate the top-right and bottom-left coordinates of the smallest rectangle that contains all living cells
+  if (state.length > 0) {
+    let stateCopy = [...state];
+    allLivingCells.topRight = stateCopy.shift();
+    allLivingCells.bottomLeft = stateCopy.pop();
+  }
+  return  allLivingCells;
+};
 
 const printCells = (state) => {};
 
