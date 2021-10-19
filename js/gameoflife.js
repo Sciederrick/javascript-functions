@@ -38,8 +38,8 @@ const corners = (state = []) => {
   //  calculate the top-right and bottom-left coordinates of the smallest rectangle that contains all living cells
   if (state.length > 0) {
     let stateCopy = [...state];
-    allLivingCells.topRight = stateCopy.shift();
-    allLivingCells.bottomLeft = stateCopy.pop();
+    allLivingCells.topRight = [stateCopy.pop()[0], stateCopy.shift()[1]];
+    allLivingCells.bottomLeft = [stateCopy.pop()[1], stateCopy.shift()[0]];
   }
   return  allLivingCells;
 };
