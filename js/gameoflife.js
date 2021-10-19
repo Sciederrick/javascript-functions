@@ -15,9 +15,9 @@ function same([x, y], [j, k]) {
 // The game state to search for `cell` is passed as the `this` value of the function.
 function contains(cell) {
   let cellCoordinatesMatch = 0;
-  for (let i = 0; i < this.state.length; i++) {
+  for (let i = 0; i < this.length; i++) {
     for (let j = 0; j < 2; j++) {
-      if (cell[j] === this.state[i][j]) {
+      if (cell[j] === this[i][j]) {
         cellCoordinatesMatch++;
       }
     }
