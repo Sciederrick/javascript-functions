@@ -24,6 +24,7 @@ function contains(cell) {
     if (cellCoordinatesMatch === 2) return true; // x & y match
     cellCoordinatesMatch = 0; //  reset
   }
+  return false;
 }
 
 const printCell = (cell, state) => {
@@ -46,19 +47,118 @@ const corners = (state = []) => {
   return  allLivingCells;
 };
 
-const printCells = (state) => {};
+const printCells = (state) => {
+  let coords = corners(state);
+  let x_units = coords.topRight[0] - coords.bottomLeft[0] + 1;
+  let y_units = coords.topRight[1] - coords.bottomLeft[1] + 1;
+  const startX = coords.topRight[0] - (x_units - 1);
+  const startY = coords.topRight[1];
+  let x = [];
+  x.push(startX)
+  let y = [];
+  y.push(startY);
+  for (let i = 1; i < x_units; i++) {
+    x.push(startX + i);
+  } 
+  for (let i = 1; i < y_units; i++) {
+    y.push(startY - i);
+  }
+  let str = '';
+  for (let j = 0; j < y.length; j++) {
+    for (let k = 0; k < x.length; k++) {
+      str += printCell([x[k],y[j]], state);
+      str += ' ';
+    }
+    str += '\n';
+  }
+  return str;
+};
 
-const getNeighborsOf = ([x, y]) => {};
+const getNeighborsOf = ([x, y]) => {
+  let xs = [];
+  let ys = [];
+  xs.push(x - 1);
+  xs.push(x);
+  xs.push(x + 1);  
 
-const getLivingNeighbors = (cell, state) => {};
+  ys.push(y - 1);
+  ys.push(y);
+  ys.push(y + 1);
 
-const willBeAlive = (cell, state) => {};
+  let neighbors = [];
 
-const calculateNext = (state) => {};
+  for (let j = 0; j < 3; j++) {
+    for (let k = 0; k < 3; k++) {
+      if (xs[k] === x && ys[j] === y) continue;
+      neighbors.push([xs[k], ys[j]]);
+    }
+  }
 
-const iterate = (state, iterations) => {};
+  return neighbors;
+};
 
-const main = (pattern, iterations) => {};
+const getLivingNeighbors = (cell, state) => {
+  const neighbors = getNeighborsOf(cell);
+  const containsCopy = contains.bind(state);
+  const livingNeighbors = neighbors.filter(neighbor => containsCopy(neighbor));
+  return livingNeighbors;
+};
+
+const willBeAlive = (cell, state) => {
+  let livingNeighbors = getLivingNeighbors(cell, state);
+  if (contains.call(state, cell)) {
+    //  The cell is alive, check for 2 living neighbors
+    return livingNeighbors.length === 2 || livingNeighbors.length === 3 ? true : false;
+  } else {
+    //  The cell is dead, check for 3 living neighbors
+    return livingNeighbors.length === 3 ? true : false;
+  }
+};
+
+const calculateNext = (state) => {
+  let coords = corners(state);
+  let x_units = (coords.topRight[0] + 1) - (coords.bottomLeft[0] - 1) + 1; /* extend units */
+  let y_units = (coords.topRight[1] + 1) - (coords.bottomLeft[1] - 1) + 1; /* extend units */
+  const startX = (coords.topRight[0] + 1) - (x_units - 1);/* extend the search grid */ 
+  const startY = coords.topRight[1] + 1;/* extend the search grid */
+  let x = [];
+  x.push(startX)
+  let y = [];
+  y.push(startY);
+  for (let i = 1; i < x_units; i++) {
+    x.push(startX + i);
+  } 
+  for (let i = 1; i < y_units; i++) {
+    y.push(startY - i);
+  }
+  let willLive = [];
+  for (let j = 0; j < y_units; j++) {
+    for (let k = 0; k < x_units; k++) {
+      if (willBeAlive([x[k], y[j]], state)) {
+        willLive.push([x[k], y[j]]);
+      }
+    }
+  }
+  return willLive;
+};
+
+const iterate = (state, iterations) => {
+  let gameStates = [];
+  gameStates.push(state);
+  let newState = [...state];
+  for (let i = 0; i < iterations; i++) {
+    newState = calculateNext(newState);
+    gameStates.push(newState);
+  }
+  return gameStates;
+};
+
+const main = (pattern, iterations) => {
+  const futureStates = iterate(startPatterns[pattern], iterations);
+  for (let i = 0; i < futureStates.length; i++) {
+      console.log(`${printCells(futureStates[i])}\n`);
+  }
+};
 
 const startPatterns = {
     rpentomino: [
